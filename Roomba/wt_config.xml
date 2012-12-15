@@ -1,0 +1,270 @@
+<server>
+	<application-settings location="*">
+	<session-management>
+		<shared-process>
+			<num-processes>1</num-processes>
+		</shared-process>
+		<tracking>Auto</tracking>
+		<reload-is-new-session>false</reload-is-new-session>
+		<timeout>60</timeout>
+		<server-push-timeout>50</server-push-timeout>
+	</session-management>
+
+	<connector-fcgi>
+		<valgrind-path></valgrind-path>
+		<run-directory>/var/run/wt</run-directory>
+		<num-threads>1</num-threads>
+	</connector-fcgi>
+
+	<connector-isapi>
+		<num-threads>10</num-threads>
+		<max-memory-request-size>128</max-memory-request-size>
+	</connector-isapi>
+
+		<!-- Javascript debug options
+
+		 Values:
+		 - true: JavaScript errors are not caught but the browser
+				 built-in debug options are used
+		 - stack: JavaScript errors are caught but also a stack trace
+					  is printed, useful for diagnosing a problem in production
+		 - false: JavaScript errors are caught and a simple error message
+				  is printed to indicate that something is terribly wrong
+	  -->
+	<debug>false</debug>
+	<log-file></log-file>
+	<log-config>*</log-config>
+	<max-request-size>128</max-request-size>
+	<session-id-length>16</session-id-length>
+	<plain-ajax-sessions-ratio-limit>1</plain-ajax-sessions-ratio-limit>
+	<ajax-puzzle>false</ajax-puzzle>
+	<send-xhtml-mime-type>false</send-xhtml-mime-type>
+
+	<!-- Do strict serialization of events.
+
+	   By default events are queued at the client-side, and
+	   transmitted to the server so that at any time only one
+	   request/response is pending. This scheme has a quality that
+	   resembles TCP: on a low-latency link you allow the
+	   transmission of many smaller requests, while on a high
+	   latency link, events will be propagated less often, but in
+	   batches.
+
+	   In any case, this scheme does not drop events, no matter
+	   how quickly they are generated.
+
+	   In rare cases, the scheme may result in unwanted behaviour,
+	   because the client-side is allowed to be slighly out of
+	   sync at the time an event is recorded with the server-side
+	   (and more so on high-latency links). The drastic
+	   alternative is to discard events while a response is
+	   pending, and can be configured by setting this option to
+	   true.
+	  -->
+	<strict-event-serialization>false</strict-event-serialization>
+
+	<!-- Enables web socket.
+
+	   By default Ajax and long polling are used to communicate
+	   between server and browser.
+
+		   By enabling web socket support, if the browser supports
+		   WebSockets, then WebSocket is the protocol used for
+		   communication between client and server. WebSockets are
+		   currently only supported by the built-in httpd Connector,
+	   which acts as both an HTTP and WebSocket server. The WebSocket
+	   protocol is intentionally not compatible with HTTP, through 
+	   a special hand-shake mechanism, and requires
+		   that all (reverse) proxy servers also have explicit support
+		   for this protocol.
+
+		   This feature is still experimental: the Web Sockets RFC is
+		   still a draft. Wt implements up to version 17 of the draft
+	   (latest as of November 2011).
+	  -->
+	<web-sockets>true</web-sockets>
+
+	<redirect-message>Load basic HTML</redirect-message>
+
+	<behind-reverse-proxy>false</behind-reverse-proxy>
+
+	<!-- Whether inline CSS is allowed.
+
+		   Some Wt widgets will insert CSS rules in the the inline
+		   stylesheet when first used. This can be disabled using this
+	   configuration option.
+
+		   Note: some widgets, such as WTreeView and WTableView,
+		   dynamically manipulate rules in this stylesheet, and will
+		   no longer work properly when inline-css is disabled.
+	  -->
+	<inline-css>false</inline-css>
+
+	<indicator-timeout>500</indicator-timeout>
+
+	<!-- Ajax user agent list
+
+		   Wt considers three types of sessions:
+	   - Ajax sessions: use Ajax and JavaScript
+	   - plain HTML sessions: use plain old server GETs and POSTs
+	   - bots: have clean internal paths and no persistent sessions
+
+		   By default, Wt does a browser detection to distinguish between
+	   the first two: if a browser supports JavaScript (and has it
+	   enabled), and has an Ajax DOM API, then Ajax sessions are chosen,
+	   otherwise plain HTML sessions.
+
+		   Here, you may indicate which user agents should or should
+		   not receive an Ajax session regardless of what they report as
+	   capabilities.
+
+		   Possible values for 'mode' or "white-list" or "black-list". A
+	   white-list will only treat the listed agents as supporting Ajax,
+	   all other agents will be served plain HTML sessions. A black-list
+	   will always server plain HTML sessions to listed agents and
+	   otherwise rely on browser capability detection.
+
+		   Each <user-agent> is a regular expression.
+	  -->
+	<user-agents type="ajax" mode="black-list">
+	  <!-- <user-agent>.*Crappy browser.*</user-agent> -->
+	</user-agents>
+
+	<!-- Bot user agent list
+
+		   Here, you can specify user agents that should be should be
+		   treated as bots.
+
+		   Each <user-agent> is a regular expression.
+	  -->
+	<user-agents type="bot">
+	  <user-agent>.*Googlebot.*</user-agent>
+	  <user-agent>.*msnbot.*</user-agent>
+	  <user-agent>.*Slurp.*</user-agent>
+	  <user-agent>.*Crawler.*</user-agent>
+	  <user-agent>.*Bot.*</user-agent>
+	  <user-agent>.*ia_archiver.*</user-agent>
+	  <user-agent>.*Twiceler.*</user-agent>
+	</user-agents>
+
+	<!-- Whether the progressive bootstrap is used.
+
+	   The default bootstrap method first senses whether there is Ajax
+	   support, and only then creates the application.
+
+	   The progressive bootstrap method first renders a plain HTML
+	   version and later upgrades to an Ajax version.
+	  -->
+	<progressive-bootstrap>false</progressive-bootstrap>
+
+	<!-- Set session-ID cookie
+
+	   In its default (and recommended) configuration, Wt does not
+	   rely on cookies for session tracking.
+
+	   Wt has several mechanisms in place to prevent session ID stealing:
+	   - for an Ajax session, the session ID is not shown in the URL,
+			 avoiding session ID stealing through a referer attack.
+	   - in case the session ID is present in the URL (e.g. for a plain
+		 HTML session), Wt will redirect links to images or external
+		 anchors through an intermediate page that censors the session ID
+
+	   In case of the loss of a session ID, the impact is minimized:
+	   - a full page refresh is not supported if the client IP address
+		 changes or the user-agent changes
+		   - an Ajax update is protected by other state which is not exposed
+		 in the URL
+
+	   To still enable a full page refresh when the client IP address
+	   changes, an additional cookie may be set which is used only
+	   for this purpose, and can be enabled using this setting.
+	  -->
+	<session-id-cookie>false</session-id-cookie>
+
+	<!-- Runtime Properties
+	 
+		   These properties may be used to adapt applications to their
+	   deployment environment. Typical use is for paths to resources
+	   that may or may not be shared between several applications.
+	  -->
+	<properties>
+		<!-- baseURL property
+
+		   The absolute URL at which the application is deployed
+		   (known to the user). This is needed only in two scenarios.
+
+		   a) use of relative URLs in included XHTML
+
+		   When you use relative URLs for images, etc... in
+		   literal XHTML fragments (e.g. in WTemplate), which need
+		   to resolve against the deployment path of the
+		   application. This will not work as expected in the
+		   presence of an internal application path.  This URL is
+		   set as base URL in the HTML, against which relative
+		   URLs are resolved so that these work correctly
+		   regardless of the internal path. It is also used
+		   explicitly in any URL generated by the library.
+
+		   b) widgetset mode deployments
+
+		   Another situation in which you need to define the baseURL is
+		   when deploying a widgetset mode application behind a reverse
+		   proxy. A widgetset mode application uses only absolute URLs
+		   because it may be hosted in a web page from an entirely
+		   different domain.
+
+		   By default, no baseURL is specified, in which case Wt will
+		   avoid using absolute URLs. Relative URLs passed in API calls
+		   will be "fixed" so that they resolve against the location of the
+		   application deploy path, even in the presence of an
+		   internal path.
+		  -->
+		<!-- <property name="baseURL">"http://mysite.com/app</property> -->
+
+			<!-- resourcesURL property
+
+		   The URL at which the resources/ folder is deployed that
+		   comes distributed with Wt and contains auxiliary files
+		   used to primarily for styles and themes.
+
+		   The default value is 'resources/'
+			  -->
+		<property name="resourcesURL">resources/</property>
+
+		<!-- extBaseURL property
+
+			   Used in conjunction with Ext:: widgets, and points to the
+		   URL of Ext JavaScript and resource files (css, images).
+		   See the documentation for the Ext namespace for details.
+
+		   The default value is 'ext/'
+			  -->
+		<property name="extBaseURL">ext/</property>
+
+		<!-- favicon property
+
+		   By default, a browser will try to fetch a /favicon.ico icon
+		   from the root of your web server which is used as an icon
+		   for your application. You can specify an alternative location
+		   by setting this property, or for an individual application
+		   entry point by passing a location to WServer::addEntryPoint().
+		  -->
+		<!-- <property name="favicon">images/favicon.ico</property> -->
+	</properties>
+
+	</application-settings>
+
+
+	<!-- Override settings for specific applications.
+
+	   Location refers to physical filesystem location of the
+	   application. The application prints this location (which
+	   corresponds to argv[0]) to the log file on startup, and this
+	   should match exactly.
+	  -->
+	<!--
+	<application-settings
+	   location="/var/www/localhost/wt-examples/hello.wt">
+	</application-settings>
+	-->
+</server>
