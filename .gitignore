@@ -1,6 +1,7 @@
 *.a
 *.aps
 *.bak
+*.bin
 [Bb]in
 *.cache
 [Dd]ebug*/
