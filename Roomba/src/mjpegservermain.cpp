@@ -60,7 +60,7 @@ int main( int argc, char** argv ) {
 	}
 	std::cout << std::endl;
 	daw::Camera camera( width, height, findFaces );
-	daw::MjpegServer mjs( 8765, camera, 25 );
+	daw::MjpegServer mjs( 8765, camera, 1 );
 	mjsptr = &mjs;
 	mjs.startBackgroundCapture( );
 	mjs.wait( );

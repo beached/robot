@@ -52,7 +52,8 @@ namespace daw {
 		std::thread mCaptureThread;
 		boost::scoped_ptr<daw::imaging::OpenCVImage> mCapturedImage;
 		bool mMarkFaces;
-		unsigned int mDelay;
+	 	unsigned int mDelay;
+		unsigned int mClientDelay;
 		void startBackgroundCapture( const unsigned int interval );
 	public:
 		Camera( int width = -1, int height = -1, bool mMarkFaces = false );
@@ -67,7 +68,7 @@ namespace daw {
 		const bool isRunning( ) const;
 		const int imageCount( ) const;
 		const unsigned int delay( ) const {
-			return mDelay;
+			return mClientDelay;
 		}
 	};
 }
