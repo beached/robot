@@ -84,6 +84,11 @@ namespace daw { namespace roomba {
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
+	void RoombaControl::clean( ) {
+		mSerialPort.send( opcodes::CLEAN );
+		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
+	}
+
 	const SensorPacket1 RoombaControl::getSensorData1( ) {
 		mSerialPort.send( {daw::roomba::opcodes::SENSORS, 1} );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );

@@ -63,6 +63,7 @@ namespace daw { namespace roomba {
 		void modeControl( );
 		void modeSafe( );
 		void modeFull( );
+		void clean( );
 		const SensorPacket1 getSensorData1( );
 		const SensorPacket3 getSensorData3( );
 		const bool& isMoving( ) const;

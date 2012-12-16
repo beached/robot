@@ -50,9 +50,9 @@ int main( int argc, char **argv ) {
 			std::cout << "with a resolution of " << width << "x" << height;
 		}
 		std::cout << std::endl;
-		daw::Camera camera( width, height, true );
+		daw::Camera camera( width, height, false );
 
-		daw::MjpegServer mjs( 8765, camera, 25 );
+		daw::MjpegServer mjs( 8765, camera, 1 );
 		mjs.startBackgroundCapture( );
 		const int argcount = argc - 1;
 		char** arguments = new char*[argc];
