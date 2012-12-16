@@ -36,6 +36,7 @@ int main( int argc, char **argv ) {
 		RoombaWebServer imageServer( server );
 		int width = -1;
 		int height = -1;
+		bool findFaces = false;
 		if( argc > 1) {
 			std::stringstream ss;
 			ss << argv[2];
@@ -44,21 +45,29 @@ int main( int argc, char **argv ) {
 			ss.clear( );
 			ss << argv[3];
 			ss >> height;
+			if( argc > 4 ) {
+				ss.str( std::string( ) );
+				ss.clear( );
+				ss << argv[4];
+				std::string shouldFind = ss.str( );
+				std::transform( shouldFind.begin( ), shouldFind.end( ), shouldFind.begin( ), ::tolower );
+				findFaces = "true" == ss.str( );
+			}
 		}
 		std::cout << argv[0] << ": Starting Camera";
 		if( width > 0 && height > 0 ) {
 			std::cout << "with a resolution of " << width << "x" << height;
 		}
 		std::cout << std::endl;
-		daw::Camera camera( width, height, false );
+		daw::Camera camera( width, height, findFaces );
 
 		daw::MjpegServer mjs( 8765, camera, 1 );
 		mjs.startBackgroundCapture( );
 		const int argcount = argc - 1;
 		char** arguments = new char*[argc];
 		arguments[0] = argv[0];
-		for( int n=4; n<argc; ++n ) {
-			arguments[n-1] = argv[n];
+		for( int n=5; n<argc; ++n ) {
+			arguments[n-4] = argv[n];
 		}
 		std::string serialPort = argv[1];
 		server.setServerConfiguration( argcount, arguments, WTHTTP_CONFIGURATION );

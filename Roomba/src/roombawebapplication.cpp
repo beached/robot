@@ -50,7 +50,7 @@ namespace daw { namespace roomba {
 		enableUpdates( true );
 
 		mRC.modeStart( );
-
+		mRC.modeSafe( );
 		// Init Page
 		setTitle( "Roomba Web" );
 		root( )->addWidget( new Wt::WText( "Speed: " ) );
