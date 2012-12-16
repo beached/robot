@@ -63,18 +63,22 @@ namespace daw {
 			fps = 10;
 		}
 		mDelay = 1000000/fps;
+		mClientDelay = mDelay;
 	}
 
 	void Camera::startBackgroundCapture( const unsigned int interval ) {
 		unsigned int delay = mDelay;
-		std::cerr << "Delaying capture for " << delay << "µs between frames" << std::endl;
 		if( interval*1000 > delay ) {
 			delay = interval*1000;
 		}
+		std::cerr << "Delaying capture for " << delay << "µs between frames" << std::endl;
 		mCaptureThread = std::thread( [&, delay]( ) {
 			mRun = true;
 			while( mRun ) {
+				const boost::posix_time::ptime startTime = boost::posix_time::microsec_clock::universal_time( );
 				capture( );
+				const boost::posix_time::ptime stopTime = boost::posix_time::microsec_clock::universal_time( );
+				mClientDelay = (stopTime - startTime).total_microseconds( );
 				boost::this_thread::sleep( boost::posix_time::microseconds( delay ) );
 			}
 		} );

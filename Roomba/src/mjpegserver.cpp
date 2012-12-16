@@ -22,7 +22,7 @@ namespace {
 	void session( socket_ptr sock, daw::Camera& camera, const uint32_t interval ) {
 		try {
 			uint32_t delay = camera.delay( );
-			if( interval*1000 > delay ) {
+			if( interval*1000 < delay ) {
 				delay = interval*1000;
 			}
 			std::cerr << "Delaying sending for " << delay << "µs between frames" << std::endl;
@@ -70,6 +70,11 @@ namespace {
 					} catch( std::exception& ex ) {
 						std::cerr << "void session( socket_ptr sock, daw::Camera& camera, const uint32_t interval ) - Error grabbing image from camera: " << ex.what( ) << std::endl;
 					}
+				}
+				// Update delay as to not add to server load when no pictures are avail
+				delay = camera.delay( );
+				if( interval*1000 > delay ) {
+					delay = interval*1000;
 				}
 				boost::this_thread::sleep( boost::posix_time::microseconds( delay ) );
 			}
