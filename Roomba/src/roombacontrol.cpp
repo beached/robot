@@ -84,8 +84,14 @@ namespace daw { namespace roomba {
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
-	void RoombaControl::clean( ) {
-		mSerialPort.send( opcodes::CLEAN );
+	void RoombaControl::cleanStart( ) {
+		std::vector<unsigned char> data( { opcodes::MOTORS, 0x07 } );
+		mSerialPort.send( data );
+		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
+	}
+	void RoombaControl::cleanStop( ) {
+		std::vector<unsigned char> data( { opcodes::MOTORS, 0 } );
+		mSerialPort.send( data );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 

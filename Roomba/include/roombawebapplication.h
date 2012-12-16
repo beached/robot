@@ -46,6 +46,7 @@ namespace daw { namespace roomba {
 		int mSpeed;
 		int mRotSpeed;
 		RoombaWebServer& mServer;
+		bool mIsCleaning;
 		void updateStatus( );
 		void updateVideo( );
 		void move( );
@@ -57,6 +58,7 @@ namespace daw { namespace roomba {
 		void turn( );
 		void turnClockwise( );
 		void turnCounterClockwise( );
+		void toggleVacuum( );
 	};
 	
 }}

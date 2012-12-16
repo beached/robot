@@ -45,7 +45,7 @@
 #include "roombawebapplication.h"
 
 namespace daw { namespace roomba {
-	RoombaWebApplication::RoombaWebApplication( const Wt::WEnvironment& env, RoombaWebServer& server, const std::string& serialPort ): Wt::WApplication( env ), mRC( serialPort ), txtSpeed( nullptr ), txtRadius( nullptr ), txtDuration( nullptr ), rstCurrentView( nullptr ), lblStatus( nullptr ), imgCurrentView( nullptr ), mSpeed( 0 ), mRotSpeed( 0 ), mServer( server ) {
+	RoombaWebApplication::RoombaWebApplication( const Wt::WEnvironment& env, RoombaWebServer& server, const std::string& serialPort ): Wt::WApplication( env ), mRC( serialPort ), txtSpeed( nullptr ), txtRadius( nullptr ), txtDuration( nullptr ), rstCurrentView( nullptr ), lblStatus( nullptr ), imgCurrentView( nullptr ), mSpeed( 0 ), mRotSpeed( 0 ), mServer( server ), mIsCleaning( false ) {
 		//Init roomba
 		enableUpdates( true );
 
@@ -99,6 +99,9 @@ namespace daw { namespace roomba {
 		Wt::WImage* imgRotateCCW = new Wt::WImage( Wt::WLink( "arrows/rotateccw.png" ) );
 		imgRotateCCW->clicked( ).connect( this, &RoombaWebApplication::turnCounterClockwise );
 		
+		Wt::WImage* imgVacuum = new Wt::WImage( Wt::WLink( "arrows/vacuum.png" ) );
+		imgVacuum->clicked( ).connect( this, &RoombaWebApplication::toggleVacuum );
+		
 		Wt::WGridLayout* grdControls = new Wt::WGridLayout( );
 		grdControls->addWidget( imgRotateCW, 0, 1 );
 		grdControls->addWidget( imgUp, 0, 2 );
@@ -107,6 +110,7 @@ namespace daw { namespace roomba {
 		grdControls->addWidget( imgStop, 1, 2 );
 		grdControls->addWidget( imgRight, 1, 3 );
 		grdControls->addWidget( imgDown, 2, 2 );
+		grdControls->addWidget( imgVacuum, 2, 3 );
 		
 		Wt::WContainerWidget* w = new Wt::WContainerWidget( root( ) );
 		w->resize( 150, 150 );
@@ -243,6 +247,16 @@ namespace daw { namespace roomba {
 		mRotSpeed = 0;
 		mRC.motorsStop( );
 	}
+
+	void RoombaWebApplication::toggleVacuum( ) {
+		if( mIsCleaning ) {
+			mRC.cleanStop( );
+		} else {
+			mRC.cleanStart( );
+		}
+		mIsCleaning = !mIsCleaning;
+	}
+
 
 }}
 
