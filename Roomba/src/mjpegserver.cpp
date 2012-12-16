@@ -21,6 +21,11 @@ typedef boost::shared_ptr<tcp::socket> socket_ptr;
 namespace {
 	void session( socket_ptr sock, daw::Camera& camera, const uint32_t interval ) {
 		try {
+			uint32_t delay = camera.delay( );
+			if( interval*1000 > delay ) {
+				delay = interval*1000;
+			}
+			std::cerr << "Delaying sending for " << delay << "µs between frames" << std::endl;
 			std::cout << "Connection from: " << sock->remote_endpoint( ).address( ).to_string( ) << std::endl;
 			const std::string eol = "\r\n";
 			const std::string boundary = "--myboundary" + eol;
@@ -41,18 +46,18 @@ namespace {
 			while( sock->is_open( ) ) {
 				if( camera.imageCount( ) != imageCount ) {	// Will roll over and the count is always incrementing by one
 					try {	
-						//daw::OpenCVMat jpeg = camera.imageJpeg( imageCount );
+						daw::OpenCVMat jpeg = camera.imageJpeg( imageCount );
 						std::stringstream ss;
 						ss << boundary;
 						ss << "Content-Type: image/jpeg" << eol;
-						ss << "Content-Length: 0 " /*<< jpeg.get( )->cols*/ << eol << eol;
+						ss << "Content-Length: " << jpeg.get( )->cols << eol << eol;
 						const std::string imgData = ss.str( );
 						boost::asio::write( *sock, boost::asio::buffer( imgData.c_str( ), imgData.size( ) ), boost::asio::transfer_all( ), errcode );
 						if( errcode ) {
 							std::cerr << "Error writing: " << errcode.message( ) << std::endl;
 							break;
 						}
-//						boost::asio::write( *sock, boost::asio::buffer( jpeg.get( )->data.ptr, jpeg.get( )->cols ), boost::asio::transfer_all( ), errcode );
+						boost::asio::write( *sock, boost::asio::buffer( jpeg.get( )->data.ptr, jpeg.get( )->cols ), boost::asio::transfer_all( ), errcode );
 						if( errcode ) {
 							std::cerr << "Error writing: " << errcode.message( ) << std::endl;
 							break;
@@ -66,7 +71,7 @@ namespace {
 						std::cerr << "void session( socket_ptr sock, daw::Camera& camera, const uint32_t interval ) - Error grabbing image from camera: " << ex.what( ) << std::endl;
 					}
 				}
-				boost::this_thread::sleep( boost::posix_time::milliseconds( interval ) );
+				boost::this_thread::sleep( boost::posix_time::microseconds( delay ) );
 			}
 		} catch( std::exception& ex ) {
 			std::cerr << "void session( socket_ptr sock, daw::Camera& camera, const uint32_t interval ) - Uncaught Exception" << ex.what( ) << std::endl;

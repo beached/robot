@@ -46,7 +46,7 @@ namespace daw {
 	Camera::Camera( int width, int height, int cameraIndex, bool markFaces ):mCapture( cameraIndex ), mCaptureMutex( ), mCameraMutex( ), mCapturedImageJpeg( nullptr ), mRun( false ), mImgCounter( 0 ), mMarkFaces( markFaces ) {
 		// Only one at a time allow, other contructors will lock
 		boost::lock_guard<boost::mutex> lock( Camera::mCaptureMutex );	// Only one capture at a time allowed
-		nullcheck( Camera::mCapture.get( ), "Camera::Camera( ) - Error initializing CvCapture" );
+		nullcheck( mCapture.get( ), "Camera::Camera( ) - Error initializing CvCapture" );
 		std::cerr << "**** Camera::Camera( )" << std::endl;
 		if( nullptr == mCapture.get( ) ) {
 			const std::string msg = "Camera::Camera( ) - Error aquiring camera";
@@ -54,17 +54,28 @@ namespace daw {
 			throw std::runtime_error( msg );
 		}
 		if( 0 < width && 0 < height ) {
-			cvSetCaptureProperty( Camera::mCapture.get( ), CV_CAP_PROP_FRAME_WIDTH, width );
-			cvSetCaptureProperty( Camera::mCapture.get( ), CV_CAP_PROP_FRAME_HEIGHT, height );
+			cvSetCaptureProperty( mCapture.get( ), CV_CAP_PROP_FRAME_WIDTH, width );
+			cvSetCaptureProperty( mCapture.get( ), CV_CAP_PROP_FRAME_HEIGHT, height );
 		}
+
+		int fps = cvGetCaptureProperty( mCapture.get( ), CV_CAP_PROP_FPS );
+		if( 0 >= fps ) {
+			fps = 10;
+		}
+		mDelay = 1000000/fps;
 	}
 
 	void Camera::startBackgroundCapture( const unsigned int interval ) {
-		mCaptureThread = std::thread( [&, interval]( ) {
+		unsigned int delay = mDelay;
+		std::cerr << "Delaying capture for " << delay << "µs between frames" << std::endl;
+		if( interval*1000 > delay ) {
+			delay = interval*1000;
+		}
+		mCaptureThread = std::thread( [&, delay]( ) {
 			mRun = true;
 			while( mRun ) {
 				capture( );
-				boost::this_thread::sleep( boost::posix_time::milliseconds( interval ) );
+				boost::this_thread::sleep( boost::posix_time::microseconds( delay ) );
 			}
 		} );
 	}
@@ -92,16 +103,14 @@ namespace daw {
 	void Camera::capture( ) {
 		boost::lock_guard<boost::mutex> lock( mCameraMutex );
 		const std::vector<int> jpegParam = { CV_IMWRITE_JPEG_QUALITY, 80, 0 };
-		IplImage* imgc = cvQueryFrame( Camera::mCapture.get( ) );
-		IplImage* img = cvCreateImage( cvGetSize( imgc ), IPL_DEPTH_8U, 1 );
-		cvCvtColor( imgc, img, CV_RGB2GRAY );
-		if( nullptr != img ) {
-			mCapturedImage.reset( new daw::imaging::OpenCVImage( img ) );
+		IplImage* imgc = cvQueryFrame( mCapture.get( ) );
+		if( nullptr != imgc ) {
+			mCapturedImage.reset( new daw::imaging::OpenCVImage( imgc ) );
 			if( mMarkFaces ) {
 				mCapturedImage->markFaces( );
 			}
-//			CvMat* jpeg = cvEncodeImage( ".jpeg", mCapturedImage->get( ), &jpegParam[0] );
-//			mCapturedImageJpeg.reset( new daw::OpenCVMat( jpeg, false ) );
+			CvMat* jpeg = cvEncodeImage( ".jpeg", mCapturedImage->get( ), &jpegParam[0] );
+			mCapturedImageJpeg.reset( new daw::OpenCVMat( jpeg, false ) );
 			++mImgCounter;
 		} else {
 			std::cerr << "****Camera::capture( ) - Invalid image captured" << std::endl;
