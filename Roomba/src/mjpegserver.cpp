@@ -41,18 +41,18 @@ namespace {
 			while( sock->is_open( ) ) {
 				if( camera.imageCount( ) != imageCount ) {	// Will roll over and the count is always incrementing by one
 					try {	
-						daw::OpenCVMat jpeg = camera.imageJpeg( imageCount );
+						//daw::OpenCVMat jpeg = camera.imageJpeg( imageCount );
 						std::stringstream ss;
 						ss << boundary;
 						ss << "Content-Type: image/jpeg" << eol;
-						ss << "Content-Length: " << jpeg.get( )->cols << eol << eol;
+						ss << "Content-Length: 0 " /*<< jpeg.get( )->cols*/ << eol << eol;
 						const std::string imgData = ss.str( );
 						boost::asio::write( *sock, boost::asio::buffer( imgData.c_str( ), imgData.size( ) ), boost::asio::transfer_all( ), errcode );
 						if( errcode ) {
 							std::cerr << "Error writing: " << errcode.message( ) << std::endl;
 							break;
 						}
-						boost::asio::write( *sock, boost::asio::buffer( jpeg.get( )->data.ptr, jpeg.get( )->cols ), boost::asio::transfer_all( ), errcode );
+//						boost::asio::write( *sock, boost::asio::buffer( jpeg.get( )->data.ptr, jpeg.get( )->cols ), boost::asio::transfer_all( ), errcode );
 						if( errcode ) {
 							std::cerr << "Error writing: " << errcode.message( ) << std::endl;
 							break;

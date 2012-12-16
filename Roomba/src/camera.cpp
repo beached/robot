@@ -100,8 +100,8 @@ namespace daw {
 			if( mMarkFaces ) {
 				mCapturedImage->markFaces( );
 			}
-			CvMat* jpeg = cvEncodeImage( ".jpeg", mCapturedImage->get( ), &jpegParam[0] );
-			mCapturedImageJpeg.reset( new daw::OpenCVMat( jpeg, false ) );
+//			CvMat* jpeg = cvEncodeImage( ".jpeg", mCapturedImage->get( ), &jpegParam[0] );
+//			mCapturedImageJpeg.reset( new daw::OpenCVMat( jpeg, false ) );
 			++mImgCounter;
 		} else {
 			std::cerr << "****Camera::capture( ) - Invalid image captured" << std::endl;
