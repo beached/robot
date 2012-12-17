@@ -48,7 +48,7 @@ namespace daw { namespace roomba {
 	RoombaWebApplication::RoombaWebApplication( const Wt::WEnvironment& env, RoombaWebServer& server, const std::string& serialPort ): Wt::WApplication( env ), mRC( serialPort ), txtSpeed( nullptr ), txtRadius( nullptr ), txtDuration( nullptr ), rstCurrentView( nullptr ), lblStatus( nullptr ), imgCurrentView( nullptr ), mSpeed( 0 ), mRotSpeed( 0 ), mServer( server ), mIsCleaning( false ) {
 		//Init roomba
 		enableUpdates( true );
-
+		root( )->decorationStyle( ).setBackgroundColor( Wt::WColor( 0, 0, 0 ) );
 		mRC.modeStart( );
 		mRC.modeSafe( );
 		// Init Page
@@ -113,7 +113,7 @@ namespace daw { namespace roomba {
 		grdControls->addWidget( imgVacuum, 2, 3 );
 		
 		Wt::WContainerWidget* w = new Wt::WContainerWidget( root( ) );
-		w->resize( 150, 150 );
+		w->resize( 200, 200 );
 		w->setLayout( grdControls );
 		root( )->addWidget( w );
 
