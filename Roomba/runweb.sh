@@ -8,9 +8,9 @@ DOCROOT="--docroot ./"
 
 #Change often
 #SIZE="960 720"
-#SIZE="320 240"
+SIZE="320 240"
 #SIZE="176 144"
-SIZE="160 120"
+#SIZE="160 120"
 FINDFACES="false"
 SERIALPORT="/dev/ttyUSB0"
 
