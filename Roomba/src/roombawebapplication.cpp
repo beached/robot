@@ -48,7 +48,7 @@ namespace daw { namespace roomba {
 	RoombaWebApplication::RoombaWebApplication( const Wt::WEnvironment& env, RoombaWebServer& server, const std::string& serialPort ): Wt::WApplication( env ), mRC( serialPort ), txtSpeed( nullptr ), txtRadius( nullptr ), txtDuration( nullptr ), rstCurrentView( nullptr ), lblStatus( nullptr ), imgCurrentView( nullptr ), mSpeed( 0 ), mRotSpeed( 0 ), mServer( server ), mIsCleaning( false ) {
 		//Init roomba
 		enableUpdates( true );
-		root( )->decorationStyle( ).setBackgroundColor( Wt::WColor( 0, 0, 0 ) );
+		root( )->decorationStyle( ).setBackgroundColor( Wt::WColor( 50, 50, 50 ) );
 		mRC.modeStart( );
 		mRC.modeSafe( );
 		// Init Page
