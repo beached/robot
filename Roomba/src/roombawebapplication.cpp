@@ -112,6 +112,7 @@ namespace daw { namespace roomba {
 		grdControls->addWidget( imgLeft, 1, 1 );
 		grdControls->addWidget( imgStop, 1, 2 );
 		grdControls->addWidget( imgRight, 1, 3 );
+		grdControls->addWidget( imgExplore, 2, 1 );
 		grdControls->addWidget( imgDown, 2, 2 );
 		grdControls->addWidget( imgVacuum, 2, 3 );
 		
@@ -261,8 +262,7 @@ namespace daw { namespace roomba {
 	}
 
 	void RoombaWebApplication::explore( ) {
-		moveStop( );
-		mRC.explore( );
+		mServer.ToggleLaser( );
 	}
 
 }}

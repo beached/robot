@@ -32,8 +32,8 @@ namespace daw {
 			return mPin;
 		}
 
-		const uint8_t DigitalRead( );
-		void DigitalWrite( uint8_t value );
+		const bool DigitalRead( );
+		void DigitalWrite( const bool value );
 		friend std::ostream& operator<<( std::ostream& stream, daw::Gpio& value );
 		friend std::istream& operator>>( std::istream& stream, daw::Gpio& value );
 	};

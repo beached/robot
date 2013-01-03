@@ -17,7 +17,7 @@ namespace daw {
 		pinMode( mPin, mIsReadMode ? 0 : 1 );
 	}
 
-	const uint8_t Gpio::DigitalRead( ) {
+	const bool Gpio::DigitalRead( ) {
 		if( !IsInReadMode( ) ) {
 			if( ManualPinMode( ) ) {
 				throw std::runtime_error( "Gpio: Tried to read from a write pin" );
@@ -28,7 +28,7 @@ namespace daw {
 		return digitalRead( mPin );
 	}
 
-	void Gpio::DigitalWrite( const uint8_t value ) {
+	void Gpio::DigitalWrite( const bool value ) {
 		if( !IsInWriteMode( ) ) {
 			if( ManualPinMode( ) ) {
 				throw std::runtime_error( "Gpio: Tried to write to a read pin" );

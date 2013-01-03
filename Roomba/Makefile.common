@@ -60,8 +60,8 @@ $(OBJDIR)mjpegservermain.o: $(SRCDIR)mjpegservermain.cpp $(INCDIR)opencvmat.h
 cameratest: $(OBJDIR)opencvimage.o $(OBJDIR)util.o $(OBJDIR)camera.o $(OBJDIR)cameratest.o
 	$(CXX) $(OBJDIR)opencvimage.o $(OBJDIR)util.o $(OBJDIR)camera.o $(OBJDIR)cameratest.o $(DEFSCV) -o cameratest
 
-roombacontroller: $(OBJDIR)roombasensors.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)util.o $(OBJDIR)gpio.o $(OBJDIR)main.o
-	$(CXX) $(OBJDIR)roombasensors.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)util.o $(OBJDIR)gpio.o $(OBJDIR)main.o $(DEFSTH) -o roombacontroller
+roombacontroller: $(OBJDIR)roombasensors.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)util.o $(OBJDIR)main.o
+	$(CXX) $(OBJDIR)roombasensors.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)util.o $(OBJDIR)main.o $(DEFSTH) -o roombacontroller
 
 roombaweb: $(OBJDIR)roombasensors.o $(OBJDIR)camera.o $(OBJDIR)mjpegserver.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)opencvimage.o $(OBJDIR)util.o $(OBJDIR)wtutil.o $(OBJDIR)roombawebserver.o $(OBJDIR)roombawebimagepush.o $(OBJDIR)roombawebapplication.o $(OBJDIR)gpio.o $(OBJDIR)webmain.o
 	 $(CXX) $(OBJDIR)roombasensors.o $(OBJDIR)camera.o $(OBJDIR)mjpegserver.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)opencvimage.o $(OBJDIR)util.o $(OBJDIR)wtutil.o $(OBJDIR)roombawebserver.o $(OBJDIR)roombawebimagepush.o $(OBJDIR)roombawebapplication.o $(OBJDIR)webmain.o $(OBJDIR)gpio.o $(DEFSWT) -o roombaweb

@@ -24,6 +24,7 @@
 #include <vector>
 #include <Wt/WServer>
 #include "opencvimage.h"
+#include "gpio.h"
 
 namespace daw { namespace roomba {
 	class RoombaWebServer: boost::noncopyable {
@@ -44,12 +45,15 @@ namespace daw { namespace roomba {
 		const int interval = 500;
 		void run( );
 		Wt::WRasterImage* mRasterImage;
+		daw::Gpio mGpio;
+		bool mLaserOn;
 	public:
 		RoombaWebServer( Wt::WServer& server );
 		~RoombaWebServer( );
 		void connect( Client *client, const boost::function<void( )>& function );
 		void disconnect( Client *client );
 		Wt::WRasterImage* getImage( );
+		void ToggleLaser( );
 	};
 }}
 #endif	//HAS_ROOMBAWEBSERVER_HEADER

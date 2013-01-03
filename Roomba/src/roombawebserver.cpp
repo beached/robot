@@ -26,12 +26,15 @@
 
 namespace daw { namespace roomba {
 
-	RoombaWebServer::RoombaWebServer( Wt::WServer& server ):  mRun( true ), mServer( server ), mRasterImage( nullptr ) {
+	RoombaWebServer::RoombaWebServer( Wt::WServer& server ):  mRun( true ), mServer( server ), mRasterImage( nullptr ), mGpio( 0, false ), mLaserOn( false ) {
+		mGpio.DigitalWrite( mLaserOn );
 	//	mThread = boost::thread( boost::bind( &RoombaWebServer::run, this ) );
 	}
 	
 	RoombaWebServer::~RoombaWebServer( ) {
 		Wt::log( "info" ) << "Stopping RoombaWebServer";
+		mLaserOn = false;
+		mGpio.DigitalWrite( mLaserOn );
 		mRun = false;
 		if( mThread.joinable( ) ) {
 			mThread.join( );
@@ -71,6 +74,11 @@ namespace daw { namespace roomba {
 
 	Wt::WRasterImage* RoombaWebServer::getImage( ) {
 		return mRasterImage;
+	}
+
+	void RoombaWebServer::ToggleLaser( ) {
+		mGpio.DigitalWrite( mLaserOn );
+		mLaserOn = !mLaserOn;
 	}
 }}
 

@@ -50,7 +50,7 @@ namespace daw { namespace roomba {
 	private:
 		daw::SerialPort mSerialPort;
 		bool mIsMoving;
-		daw::Gpio mGpio;
+		bool mLaserOn;
 	public:
 		RoombaControl( const std::string& device );
 		~RoombaControl( );
@@ -67,7 +67,6 @@ namespace daw { namespace roomba {
 		void modeFull( );
 		void cleanStart( );
 		void cleanStop( );
-		void explore( );
 		const SensorPacket1 getSensorData1( );
 		const SensorPacket3 getSensorData3( );
 		const bool& isMoving( ) const;
