@@ -96,6 +96,9 @@ namespace daw { namespace roomba {
 		Wt::WImage* imgRotateCW = new Wt::WImage( Wt::WLink( "arrows/rotatecw.png" ) );
 		imgRotateCW->clicked( ).connect( this, &RoombaWebApplication::turnClockwise );
 		
+		Wt::WImage* imgExplore = new Wt::WImage( Wt::WLink( "arrows/explore.png" ) );
+		imgExplore->clicked( ).connect( this, &RoombaWebApplication::explore );
+		
 		Wt::WImage* imgRotateCCW = new Wt::WImage( Wt::WLink( "arrows/rotateccw.png" ) );
 		imgRotateCCW->clicked( ).connect( this, &RoombaWebApplication::turnCounterClockwise );
 		
@@ -257,6 +260,10 @@ namespace daw { namespace roomba {
 		mIsCleaning = !mIsCleaning;
 	}
 
+	void RoombaWebApplication::explore( ) {
+		moveStop( );
+		mRC.explore( );
+	}
 
 }}
 

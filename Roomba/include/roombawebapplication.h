@@ -59,6 +59,7 @@ namespace daw { namespace roomba {
 		void turnClockwise( );
 		void turnCounterClockwise( );
 		void toggleVacuum( );
+		void explore( );
 	};
 	
 }}

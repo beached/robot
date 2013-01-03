@@ -26,7 +26,7 @@
 
 namespace daw { namespace roomba {
 
-	RoombaControl::RoombaControl( const std::string& device ): mSerialPort( device ), mIsMoving( false ) { }
+	RoombaControl::RoombaControl( const std::string& device ): mSerialPort( device ), mIsMoving( false ), mGpio( 0, false ) { }
 
 	RoombaControl::~RoombaControl( ) {
 		if( mSerialPort.is_open( ) ) {
@@ -110,5 +110,15 @@ namespace daw { namespace roomba {
 	const bool& RoombaControl::isMoving( ) const {
 		return mIsMoving;
 	}
+
+	void RoombaControl::explore( ) {
+		static int value = 1;
+		for( size_t n=0; n<5; ++n ) {
+			mGpio.DigitalWrite( value );
+			boost::this_thread::sleep( boost::posix_time::milliseconds( 2000 ) );
+			value = (0 == value ? 1 : 0);
+		}
+	}
+
 }}
 
