@@ -81,18 +81,20 @@ namespace daw {
 }
 
 int main( int argc, char** argv ) {
-	unsigned int val = 0;
 	if( 3 == argc ) {
 		daw::SerialPort outp( argv[1] );
 		if( outp.is_open( ) ) {
-			int val = 0;
+			unsigned int val = 0;
 			{
 				std::stringstream ss;
 				ss << argv[2];
 				ss >> val;
 			}
 			std::cout << "Outputting '" << (char)val << "'(" << (int)val << ")" << std::endl;
-			outp.send( val );
+			// Setup mask
+			//boost::this_thread::sleep( boost::posix_time::milliseconds( 1 ) );
+			outp.send( { 0xFF, 0x40 } );	// 255 is CMD_SETMASKD0, next byte is the mask, 64 sets bit 7 so that D7 is enabled
+			outp.send( { 0x40, (uint8_t)val } );		// 64 is CMD_WRITE, next byte is values for pins D0..D7
 			return EXIT_SUCCESS;
 		} else {
 			std::cerr << "Error opening port " << argv[1] << std::endl;
