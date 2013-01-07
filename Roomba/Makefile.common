@@ -1,6 +1,5 @@
-#CFLAGS=-I./include -I/usr/include -std=c++0x -Wall -pedantic -g3 $(OPT)
-#CFLAGS=-g -O2 -I./include -I/usr/include -std=c++0x -Wall -pedantic $(OPT)
-CFLAGS=-g -O2 -I./include -I/usr/include -std=c++11 -Wall -pedantic $(OPT)
+#CFLAGS=-g -O2 -I./include -I/usr/include -std=c++11 -Wall -pedantic $(OPT)
+CFLAGS=-g3 -I./include -I/usr/include -std=c++11 -Wall -pedantic $(OPT)
 DEFS=-L/usr/lib -L/usr/local/lib -lboost_system 
 DEFSCV=$(DEFS) -lopencv_core -lopencv_highgui -lopencv_objdetect -lboost_thread -lboost_signals -lopencv_imgproc
 DEFSTH=$(DEFSCV) -lpthread 

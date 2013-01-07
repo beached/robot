@@ -3,7 +3,8 @@
 #Rarely change
 SERVERADDRESS="--http-address 0.0.0.0"
 SERVERPORT="--http-port 80"
-WTCONFIG="--config ./wt_config.xml"
+#WTCONFIG="--config ./wt_config.xml"
+WTCONFIG=""
 DOCROOT="--docroot ./"
 
 #Change often
