@@ -32,7 +32,7 @@
 namespace daw { namespace roomba {
 	class RoombaWebApplication : public Wt::WApplication {
 	public:
-		RoombaWebApplication( const Wt::WEnvironment& env, RoombaWebServer& server, const std::string& serialPort );
+		RoombaWebApplication( const Wt::WEnvironment& env, RoombaWebServer& server, const std::string& roombaPort, const std::string& arduinoPort );
 	private:
 		// These are all singleton's and can never have more than one
 		daw::roomba::RoombaControl mRC;

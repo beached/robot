@@ -45,7 +45,7 @@
 #include "roombawebapplication.h"
 
 namespace daw { namespace roomba {
-	RoombaWebApplication::RoombaWebApplication( const Wt::WEnvironment& env, RoombaWebServer& server, const std::string& serialPort ): Wt::WApplication( env ), mRC( serialPort ), txtSpeed( nullptr ), txtRadius( nullptr ), txtDuration( nullptr ), rstCurrentView( nullptr ), lblStatus( nullptr ), imgCurrentView( nullptr ), mSpeed( 0 ), mRotSpeed( 0 ), mServer( server ), mIsCleaning( false ) {
+	RoombaWebApplication::RoombaWebApplication( const Wt::WEnvironment& env, RoombaWebServer& server, const std::string& roombaPort, const std::string& arduinoPort ): Wt::WApplication( env ), mRC( roombaPort, arduinoPort ), txtSpeed( nullptr ), txtRadius( nullptr ), txtDuration( nullptr ), rstCurrentView( nullptr ), lblStatus( nullptr ), imgCurrentView( nullptr ), mSpeed( 0 ), mRotSpeed( 0 ), mServer( server ), mIsCleaning( false ) {
 		//Init roomba
 		enableUpdates( true );
 		root( )->decorationStyle( ).setBackgroundColor( Wt::WColor( 50, 50, 50 ) );
@@ -262,7 +262,7 @@ namespace daw { namespace roomba {
 	}
 
 	void RoombaWebApplication::explore( ) {
-		mServer.ToggleLaser( );
+		mRC.laserToggle( );
 	}
 
 }}

@@ -22,18 +22,18 @@
 #include "roombasensors.h"
 
 int main( int argc, char** argv ) {
-	daw::roomba::RoombaControl rc( argv[1] );
+	daw::roomba::RoombaControl rc( argv[1], argv[2] );
 	std::stringstream ss;
-	ss << argv[2];
+	ss << argv[3];
 	int speed = 0;
 	ss >> speed;
 	ss.clear( );
-	ss << argv[3];
+	ss << argv[4];
 	int radius = 0;
 	ss >> radius;
 	int duration = 0;
 	ss.clear( );
-	ss << argv[4];
+	ss << argv[5];
 	ss >> duration;
 	rc.modeStart( );
 	boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );

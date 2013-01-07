@@ -23,8 +23,8 @@
 using namespace daw::roomba;
 
 
-Wt::WApplication *createApplication( const Wt::WEnvironment& env, RoombaWebServer& server, const std::string& serialPort ) {
-	return new RoombaWebApplication( env, server, serialPort );
+Wt::WApplication *createApplication( const Wt::WEnvironment& env, RoombaWebServer& server, const std::string& roombaPort, const std::string& arduinoPort ) {
+	return new RoombaWebApplication( env, server, roombaPort, arduinoPort );
 }
 
 int main( int argc, char **argv ) {
@@ -39,16 +39,16 @@ int main( int argc, char **argv ) {
 		bool findFaces = false;
 		if( argc > 1) {
 			std::stringstream ss;
-			ss << argv[2];
+			ss << argv[3];
 			ss >> width;
 			ss.str( std::string( ) );
 			ss.clear( );
-			ss << argv[3];
+			ss << argv[4];
 			ss >> height;
 			if( argc > 4 ) {
 				ss.str( std::string( ) );
 				ss.clear( );
-				ss << argv[4];
+				ss << argv[5];
 				std::string shouldFind = ss.str( );
 				std::transform( shouldFind.begin( ), shouldFind.end( ), shouldFind.begin( ), ::tolower );
 				findFaces = "true" == ss.str( );
@@ -66,13 +66,14 @@ int main( int argc, char **argv ) {
 		const int argcount = argc - 1;
 		char** arguments = new char*[argc];
 		arguments[0] = argv[0];
-		for( int n=5; n<argc; ++n ) {
+		for( int n=6; n<argc; ++n ) {
 			arguments[n-4] = argv[n];
 		}
-		std::string serialPort = argv[1];
+		std::string roombaPort = argv[1];
+		std::string arduinoPort = argv[2];
 		server.setServerConfiguration( argcount, arguments, WTHTTP_CONFIGURATION );
 
-		server.addEntryPoint( Wt::Application, boost::bind( createApplication, _1, boost::ref( imageServer ), boost::ref( serialPort )  ) );
+		server.addEntryPoint( Wt::Application, boost::bind( createApplication, _1, boost::ref( imageServer ), boost::ref( roombaPort ), boost::ref( arduinoPort )  ) );
 
 		if( server.start( ) ) {
 			int sig = Wt::WServer::waitForShutdown( );

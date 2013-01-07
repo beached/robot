@@ -24,13 +24,23 @@
 #include "util.h"
 #include "serialport.h"
 
+namespace {
+	const uint8_t bit7 = 1<<7;
+}
+
 namespace daw { namespace roomba {
 
-	RoombaControl::RoombaControl( const std::string& device ): mSerialPort( device ), mIsMoving( false ), mLaserOn( false ) { }
+	RoombaControl::RoombaControl( const std::string& roombaPort, const std::string& arduinoPort ): mRoombaPort( roombaPort ), mArduinoPort( arduinoPort, 115200 ), mIsMoving( false ), mLaserOn( false ) {
+		// Setup Arduino Connection
+		mArduinoPort.send( { 0xFF, 0x40 } );	// 255 is CMD_SETMASKD0, next byte is the mask, 64 sets bit 7 so that D7 is enabled
+	}
 
 	RoombaControl::~RoombaControl( ) {
-		if( mSerialPort.is_open( ) ) {
-			mSerialPort.close( );
+		if( mRoombaPort.is_open( ) ) {
+			mRoombaPort.close( );
+		}
+		if( mArduinoPort.is_open( ) ) {
+			mArduinoPort.close( );
 		}
 	}
 
@@ -55,7 +65,7 @@ namespace daw { namespace roomba {
 			vRadius[1] = 0x00;
 		}
 		std::vector<unsigned char> data( { opcodes::DRIVE, vSpeed[0], vSpeed[1], vRadius[0], vRadius[1] } );
-		mSerialPort.send( data );
+		mRoombaPort.send( data );
 		mIsMoving = true;
 	}
 
@@ -65,50 +75,65 @@ namespace daw { namespace roomba {
 	}
 
 	void RoombaControl::modeStart( ) {
-		mSerialPort.send( opcodes::START );
+		mRoombaPort.send( opcodes::START );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	void RoombaControl::modeControl( ) {
-		mSerialPort.send( opcodes::CONTROL );
+		mRoombaPort.send( opcodes::CONTROL );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	void RoombaControl::modeSafe( ) {
-		mSerialPort.send( opcodes::SAFE );
+		mRoombaPort.send( opcodes::SAFE );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	void RoombaControl::modeFull( ) {
-		mSerialPort.send( opcodes::FULL );
+		mRoombaPort.send( opcodes::FULL );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	void RoombaControl::cleanStart( ) {
 		std::vector<unsigned char> data( { opcodes::MOTORS, 0x07 } );
-		mSerialPort.send( data );
+		mRoombaPort.send( data );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 	void RoombaControl::cleanStop( ) {
 		std::vector<unsigned char> data( { opcodes::MOTORS, 0 } );
-		mSerialPort.send( data );
+		mRoombaPort.send( data );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	const SensorPacket1 RoombaControl::getSensorData1( ) {
-		mSerialPort.send( {daw::roomba::opcodes::SENSORS, 1} );
+		mRoombaPort.send( {daw::roomba::opcodes::SENSORS, 1} );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
-		return 	daw::roomba::SensorPacket1( mSerialPort.receive( 10 ) );
+		return 	daw::roomba::SensorPacket1( mRoombaPort.receive( 10 ) );
 	}
 
 	const SensorPacket3 RoombaControl::getSensorData3( ) {
-		mSerialPort.send( {daw::roomba::opcodes::SENSORS, 3} );
+		mRoombaPort.send( {daw::roomba::opcodes::SENSORS, 3} );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
-		return 	daw::roomba::SensorPacket3( mSerialPort.receive( 10 ) );
+		return 	daw::roomba::SensorPacket3( mRoombaPort.receive( 10 ) );
 	}
 
 	const bool& RoombaControl::isMoving( ) const {
 		return mIsMoving;
 	}
+
+	void RoombaControl::laserStart( ) {
+		mArduinoPort.send( { 0x40, bit7 } );		// 64 is CMD_WRITE, next byte is values for pins D0..D7
+		mLaserOn = true;	
+	}
+
+	void RoombaControl::laserStop( ) {
+		mArduinoPort.send( { 0x40, 0x00 } );		// 64 is CMD_WRITE
+		mLaserOn = false;	
+	}
+
+	void RoombaControl::laserToggle( ) {
+		mLaserOn ? laserStop( ) : laserStart( );
+	}
+
 }}
 
