@@ -82,7 +82,7 @@ int main( int argc, char **argv ) {
 			mjs.stopBackgroundCapture( );
 		}
 	} catch( std::exception e ) {
-		std::cerr << "Uncaught exception: " << e.what( ) << std::endl;
+		std::cerr << "Uncaught exception: '" << e.what( ) << "'" << std::flush << std::endl;
 		return EXIT_FAILURE;
 	}
 	return EXIT_SUCCESS;

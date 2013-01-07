@@ -32,7 +32,7 @@ namespace daw { namespace roomba {
 
 	RoombaControl::RoombaControl( const std::string& roombaPort, const std::string& arduinoPort ): mRoombaPort( roombaPort ), mArduinoPort( arduinoPort, 115200 ), mIsMoving( false ), mLaserOn( false ) {
 		// Setup Arduino Connection
-		mArduinoPort.send( { 0xFF, 0x40 } );	// 255 is CMD_SETMASKD0, next byte is the mask, 64 sets bit 7 so that D7 is enabled
+//		mArduinoPort.send( { 0xFF, 0x40 } );	// 255 is CMD_SETMASKD0, next byte is the mask, 64 sets bit 7 so that D7 is enabled
 	}
 
 	RoombaControl::~RoombaControl( ) {
