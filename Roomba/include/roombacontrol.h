@@ -23,7 +23,6 @@
 
 #include "roombasensors.h"
 #include "serialport.h"
-#include "gpio.h"
 
 namespace daw { namespace roomba {
 	class opcodes {

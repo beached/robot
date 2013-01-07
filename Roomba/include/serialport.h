@@ -29,7 +29,7 @@ namespace daw {
 		boost::asio::serial_port mSerialPort;
 		static boost::mutex mSerialPortMutex;
 	public:
-		SerialPort( std::string device );
+		SerialPort( std::string device, uint32_t bps = 57600 );
 		const std::vector<unsigned char> receive( size_t count );
 		void send( const unsigned char value );
 		void send( const std::vector<unsigned char>& values, size_t count = 0 );

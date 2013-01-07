@@ -23,8 +23,8 @@
 namespace daw { 
 	boost::mutex SerialPort::mSerialPortMutex;
 
-	SerialPort::SerialPort( std::string device ): mIO( ), mSerialPort( mIO, device.c_str( ) ) {
-		mSerialPort.set_option( boost::asio::serial_port_base::baud_rate( 57600 ) );
+	SerialPort::SerialPort( std::string device, uint32_t bps ): mIO( ), mSerialPort( mIO, device.c_str( ) ) {
+		mSerialPort.set_option( boost::asio::serial_port_base::baud_rate( bps ) );
 		mSerialPort.set_option( boost::asio::serial_port_base::character_size( 8 ) );
 		mSerialPort.set_option( boost::asio::serial_port_base::parity( boost::asio::serial_port_base::parity::none ) );
 		mSerialPort.set_option( boost::asio::serial_port_base::stop_bits( boost::asio::serial_port_base::stop_bits::one ) );	// default one

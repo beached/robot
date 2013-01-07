@@ -30,9 +30,6 @@ $(OBJDIR)util.o: $(SRCDIR)util.cpp $(INCDIR)util.h $(INCDIR)nullptr.h
 $(OBJDIR)wtutil.o: $(SRCDIR)wtutil.cpp $(INCDIR)wtutil.h
 	$(CXX) $(CFLAGS) -c -o $@ $<
 
-$(OBJDIR)gpio.o: $(SRCDIR)gpio.cpp $(INCDIR)gpio.h
-	$(CXX) $(CFLAGS) -c -o $@ $<
-
 $(OBJDIR)roombawebimagepush.o: $(SRCDIR)roombawebimagepush.cpp $(INCDIR)roombawebimagepush.h
 	$(CXX) $(CFLAGS) -c -o $@ $<
 
@@ -63,8 +60,8 @@ cameratest: $(OBJDIR)opencvimage.o $(OBJDIR)util.o $(OBJDIR)camera.o $(OBJDIR)ca
 roombacontroller: $(OBJDIR)roombasensors.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)util.o $(OBJDIR)main.o
 	$(CXX) $(OBJDIR)roombasensors.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)util.o $(OBJDIR)main.o $(DEFSTH) -o roombacontroller
 
-roombaweb: $(OBJDIR)roombasensors.o $(OBJDIR)camera.o $(OBJDIR)mjpegserver.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)opencvimage.o $(OBJDIR)util.o $(OBJDIR)wtutil.o $(OBJDIR)roombawebserver.o $(OBJDIR)roombawebimagepush.o $(OBJDIR)roombawebapplication.o $(OBJDIR)gpio.o $(OBJDIR)webmain.o
-	 $(CXX) $(OBJDIR)roombasensors.o $(OBJDIR)camera.o $(OBJDIR)mjpegserver.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)opencvimage.o $(OBJDIR)util.o $(OBJDIR)wtutil.o $(OBJDIR)roombawebserver.o $(OBJDIR)roombawebimagepush.o $(OBJDIR)roombawebapplication.o $(OBJDIR)webmain.o $(OBJDIR)gpio.o $(DEFSWT) -o roombaweb
+roombaweb: $(OBJDIR)roombasensors.o $(OBJDIR)camera.o $(OBJDIR)mjpegserver.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)opencvimage.o $(OBJDIR)util.o $(OBJDIR)wtutil.o $(OBJDIR)roombawebserver.o $(OBJDIR)roombawebimagepush.o $(OBJDIR)roombawebapplication.o $(OBJDIR)webmain.o
+	 $(CXX) $(OBJDIR)roombasensors.o $(OBJDIR)camera.o $(OBJDIR)mjpegserver.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)opencvimage.o $(OBJDIR)util.o $(OBJDIR)wtutil.o $(OBJDIR)roombawebserver.o $(OBJDIR)roombawebimagepush.o $(OBJDIR)roombawebapplication.o $(OBJDIR)webmain.o $(DEFSWT) -o roombaweb
 
 mjpegserver: $(OBJDIR)camera.o $(OBJDIR)mjpegserver.o $(OBJDIR)opencvimage.o $(OBJDIR)mjpegservermain.o 
 	$(CXX) $(OBJDIR)camera.o $(OBJDIR)mjpegserver.o $(OBJDIR)opencvimage.o $(OBJDIR)mjpegservermain.o $(DEFSTH) -o $@
