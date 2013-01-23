@@ -56,10 +56,10 @@ int main( int argc, char **argv ) {
 		}
 		std::cout << argv[0] << ": Starting Camera";
 		if( width > 0 && height > 0 ) {
-			std::cout << "with a resolution of " << width << "x" << height;
+			std::cout << " with a resolution of " << width << "x" << height;
 		}
 		std::cout << std::endl;
-		daw::Camera camera( width, height, findFaces );
+		daw::Camera camera( width, height, -1, findFaces );
 
 		daw::MjpegServer mjs( 8765, camera, 1 );
 		mjs.startBackgroundCapture( );

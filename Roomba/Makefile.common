@@ -1,5 +1,5 @@
-#CFLAGS=-g -O2 -I./include -I/usr/include -std=c++11 -Wall -pedantic $(OPT)
-CFLAGS=-g3 -I./include -I/usr/include -std=c++11 -Wall -pedantic $(OPT)
+CFLAGS=-g -O2 -I./include -I/usr/include -std=c++0x -Wall -pedantic $(OPT)
+#CFLAGS=-g3 -I./include -I/usr/include -std=c++0x -Wall -pedantic $(OPT)
 DEFS=-L/usr/lib -L/usr/local/lib -lboost_system 
 DEFSCV=$(DEFS) -lopencv_core -lopencv_highgui -lopencv_objdetect -lboost_thread -lboost_signals -lopencv_imgproc
 DEFSTH=$(DEFSCV) -lpthread 
@@ -48,14 +48,8 @@ $(OBJDIR)main.o: $(SRCDIR)main.cpp
 $(OBJDIR)webmain.o: $(SRCDIR)webmain.cpp
 	$(CXX) $(CFLAGS) -c -o $@ $<
 
-$(OBJDIR)cameratest.o: $(SRCDIR)cameratest.cpp
-	$(CXX) $(CFLAGS) -c -o $@ $<
-
 $(OBJDIR)mjpegservermain.o: $(SRCDIR)mjpegservermain.cpp $(INCDIR)opencvmat.h
 	$(CXX) $(CFLAGS) -c -o $@ $<
-
-cameratest: $(OBJDIR)opencvimage.o $(OBJDIR)util.o $(OBJDIR)camera.o $(OBJDIR)cameratest.o
-	$(CXX) $(OBJDIR)opencvimage.o $(OBJDIR)util.o $(OBJDIR)camera.o $(OBJDIR)cameratest.o $(DEFSCV) -o cameratest
 
 roombacontroller: $(OBJDIR)roombasensors.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)util.o $(OBJDIR)main.o
 	$(CXX) $(OBJDIR)roombasensors.o $(OBJDIR)serialport.o $(OBJDIR)roombacontrol.o $(OBJDIR)util.o $(OBJDIR)main.o $(DEFSTH) -o roombacontroller

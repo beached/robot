@@ -9,9 +9,9 @@ DOCROOT="--docroot ./"
 
 #Change often
 #SIZE="960 720"
-SIZE="320 240"
+#SIZE="320 240"
 #SIZE="352 288"
-#SIZE="176 144"
+SIZE="176 144"
 #SIZE="160 120"
 FINDFACES="false"
 ARDUINOPORT="/dev/ttyUSB0"

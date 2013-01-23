@@ -41,7 +41,7 @@ namespace daw { namespace roomba {
 		std::atomic<bool> mRun;
 		std::vector<Connection> mConnections;
 		Wt::WServer& mServer;
-		const int interval = 500;
+		static const int interval = 500;
 		void run( );
 		Wt::WRasterImage* mRasterImage;
 		bool mLaserOn;
