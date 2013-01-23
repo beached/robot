@@ -15,6 +15,7 @@
  */
 #include <string>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
 #include "roombasensors.h"
 
@@ -36,18 +37,17 @@ namespace {
 }
 
 namespace daw { namespace roomba {
-	SensorPacket1::SensorPacket1( const std::vector<unsigned char>& data, const size_t startByte ) {
-		bumpAndWheelDrop = data[startByte + 0];
-		wall = data[startByte + 1];
-		cliffLeft = data[startByte + 2];
-		cliffFrontLeft = data[startByte + 3];
-		cliffFrontRight = data[startByte + 4];
-		cliffRight = data[startByte + 5];
-		virtualWall = data[startByte + 6];
-		motorOverCurrents = data[startByte + 7];
-		dirtDetectorLeft = data[startByte + 8];
-		dirtDetectorRight = data[startByte + 9];
-	}
+	SensorPacket1::SensorPacket1( const std::vector<uint8_t>& data, const size_t startByte ):
+		bumpAndWheelDrop( data[startByte + 0] ),
+		wall( data[startByte + 1] ),
+		cliffLeft( data[startByte + 2] ),
+		cliffFrontLeft( data[startByte + 3] ),
+		cliffFrontRight( data[startByte + 4] ),
+		cliffRight( data[startByte + 5] ),
+		virtualWall( data[startByte + 6] ),
+		motorOverCurrents( data[startByte + 7] ),
+		dirtDetectorLeft( data[startByte + 8] ),
+		dirtDetectorRight( data[startByte + 9] ) { }
 
 	const std::string SensorPacket1::ToString( ) const {
 		std::stringstream ss;
@@ -63,16 +63,30 @@ namespace daw { namespace roomba {
 		ss << "Dirt Detector Right: " << static_cast<int>( dirtDetectorRight ) << std::endl;
 		return ss.str( );
 	}
-	
-	SensorPacket3::SensorPacket3( const std::vector<unsigned char>& data, const size_t startByte ) {
-		// TODO: validate parameters
-		chargingState = data[startByte + 0];
-		batteryVoltage = (data[startByte + 1] << 8) | data[startByte + 2];
-		batteryCurrent = (data[startByte + 3] << 8) | data[startByte + 4];
-		batteryTemperature = data[5];
-		batteryCharge = (data[startByte + 6] << 8) | data[startByte + 7];
-		batteryCapacity = (data[startByte + 8] << 8) | data[startByte + 9];
+
+	SensorPacket2::SensorPacket2( const std::vector<uint8_t>& data, const size_t startByte ): 
+		remoteControlCommand( data[startByte + 0] ),
+		buttons( data[startByte + 1] ),
+		distance( (data[startByte + 2] << 8) | data[startByte + 3] ),
+		angle( (data[startByte + 4] << 8) | data[startByte + 5] ) { }
+
+	const std::string SensorPacket2::ToString( ) const {
+		std::stringstream ss;
+		ss << "Remote Control Command: " << remoteControlCommand;
+		ss << buttons;
+		ss << "Distance: " << distance;
+		ss << "Angle: " << angle;
+		return ss.str( );
 	}
+
+	SensorPacket3::SensorPacket3( const std::vector<uint8_t>& data, const size_t startByte ):
+		// TODO: validate parameters
+		chargingState( data[startByte + 0] ),
+		batteryVoltage( (data[startByte + 1] << 8) | data[startByte + 2] ),
+		batteryCurrent( (data[startByte + 3] << 8) | data[startByte + 4] ),
+		batteryTemperature( data[5] ),
+		batteryCharge( (data[startByte + 6] << 8) | data[startByte + 7] ),
+		batteryCapacity( (data[startByte + 8] << 8) | data[startByte + 9] ) { }
 
 	const std::string SensorPacket3::ToString( ) const {
 		std::stringstream ss;
@@ -85,13 +99,12 @@ namespace daw { namespace roomba {
 		return ss.str( );
 	}
 
-	SensorBumpAndWheelDrop::SensorBumpAndWheelDrop( const unsigned char data ) {
-		wheelDropCaster = getBit( data, 4 );
-		wheelDropLeft = getBit( data, 3 );
-		wheelDropRight = getBit( data, 2 );
-		bumpLeft = getBit( data, 1 );
-		bumpRight = getBit( data, 0 );
-	}
+	SensorBumpAndWheelDrop::SensorBumpAndWheelDrop( const uint8_t data ):
+		wheelDropCaster( getBit( data, 4 ) ),
+		wheelDropLeft( getBit( data, 3 ) ),
+		wheelDropRight( getBit( data, 2 ) ),
+		bumpLeft( getBit( data, 1 ) ),
+		bumpRight( getBit( data, 0 ) ) { }
 
 	SensorBumpAndWheelDrop& SensorBumpAndWheelDrop::operator=( const SensorBumpAndWheelDrop& value ) {
 		if( this != &value ) {
@@ -104,7 +117,7 @@ namespace daw { namespace roomba {
 		return *this;
 	}
 
-	SensorBumpAndWheelDrop& SensorBumpAndWheelDrop::operator=( const unsigned char& data ) {
+	SensorBumpAndWheelDrop& SensorBumpAndWheelDrop::operator=( const uint8_t& data ) {
 		SensorBumpAndWheelDrop tmp( data );
 		std::swap( *this, tmp );
 		return *this;
@@ -120,9 +133,7 @@ namespace daw { namespace roomba {
 		return ss.str( );
 	}
 
-	SensorWall::SensorWall( const unsigned char data ) {
-		wall = getBit( data, 0 );
-	}
+	SensorWall::SensorWall( const uint8_t data ): wall( getBit( data, 0 ) ) { }
 
 	SensorWall& SensorWall::operator=( const SensorWall& value ) {
 		if( this != &value ) {
@@ -131,7 +142,7 @@ namespace daw { namespace roomba {
 		return *this;
 	}
 
-	SensorWall& SensorWall::operator=( const unsigned char& data ) {
+	SensorWall& SensorWall::operator=( const uint8_t& data ) {
 		SensorWall tmp( data );
 		std::swap( *this, tmp );
 		return *this;
@@ -142,11 +153,58 @@ namespace daw { namespace roomba {
 		ss << "Wall: " << wall << std::endl;
 		return ss.str( );
 	}
-	
-	const std::string SensorPacket2::ToString( ) const {
-		return "";
+
+	SensorButtons::SensorButtons( const uint8_t data ):
+		max( getBit( data, 0 ) ),
+		clean( getBit( data, 1 ) ),
+		spot( getBit( data, 2 ) ),
+		power( getBit( data, 3 ) ) { }
+
+	SensorButtons& SensorButtons::operator=( const SensorButtons& value ) {
+		if( this != &value ) {
+			max = value.max;
+			clean = value.clean;
+			spot = value.spot;
+			power = value.power;
+		}
+		return *this;
+	}
+
+	SensorButtons& SensorButtons::operator=( const uint8_t& data ) {
+		SensorButtons tmp( data );
+		std::swap( *this, tmp );
+		return *this;
+	}
+
+	const std::string SensorButtons::ToString( ) const {
+		std::stringstream ss;
+		ss << "Max: " << max << std::endl;
+		ss << "Clean: " << clean  << std::endl;
+		ss << "Spot: " << spot << std::endl;
+		ss << "Power: " << power  << std::endl;
+		return ss.str( );
+	}
+
+	SensorPackets::SensorPackets( const std::vector<uint8_t>& data ):sensorPacket1( data, 0 ), sensorPacket2( data, 10 ), sensorPacket3( data, 16 ) {
+		if( data.size( ) != 26 ) {
+			std::stringstream ss;
+			ss << "Data packet for Sensor data must be 26 bytes in length, it was " << data.size( );
+			throw std::runtime_error( ss.str( ) );
+		}
+	}
+
+	const std::string SensorPackets::ToString( ) const {
+		std::stringstream ss;
+		ss << sensorPacket1;
+		ss << sensorPacket2;
+		ss << sensorPacket3;
+		return ss.str( );
 	}
 }}
+
+std::ostream& operator<<( std::ostream& o, const daw::roomba::SensorPackets& value ) {
+	return o << value.ToString( );
+}
 
 std::ostream& operator<<( std::ostream& o, const daw::roomba::SensorPacket1& value ) {
 	return o << value.ToString( );
@@ -161,6 +219,10 @@ std::ostream& operator<<( std::ostream& o, const daw::roomba::SensorPacket3& val
 }
 
 std::ostream& operator<<( std::ostream& o, const daw::roomba::SensorWall& value ) {
+	return o << value.ToString( );
+}
+
+std::ostream& operator<<( std::ostream& o, const daw::roomba::SensorButtons& value ) {
 	return o << value.ToString( );
 }
 

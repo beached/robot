@@ -30,17 +30,22 @@ namespace {
 }
 
 namespace daw { namespace roomba {
+	static void sendRoomba( const daw::SerialPort& arduino, const uint8_t value ) {
+		arduino.send( { 32, 1 } );
+		arduino.send( value );
+	}
 
-	RoombaControl::RoombaControl( const std::string& roombaPort, const std::string& arduinoPort ): mRoombaPort( roombaPort ), mArduinoPort( arduinoPort, 115200 ), mIsMoving( false ), mLaserOn( false ) {
+	static void sendRoomba( const daw::SerialPort& arduino, const std::vector<uint8_t>& data ) {
+		arduino.send( { 32, data.size( ) } );
+		arduino.send( data );
+	}
+
+	RoombaControl::RoombaControl( const std::string& arduinoPort ): mArduinoPort( arduinoPort, 115200 ), mIsMoving( false ), mLaserOn( false ) {
 		std::cerr << "Connected to Roomba on " << roombaPort << " and Arduino on " << arduinoPort << std::endl;
 		// Setup Arduino Connection
-		mArduinoPort.send( { 0xFF, 0x40 } );	// 255 is CMD_SETMASKD0, next byte is the mask, 64 sets bit 7 so that D7 is enabled
 	}
 
 	RoombaControl::~RoombaControl( ) {
-		if( mRoombaPort.is_open( ) ) {
-			mRoombaPort.close( );
-		}
 		if( mArduinoPort.is_open( ) ) {
 			mArduinoPort.close( );
 		}
@@ -60,14 +65,14 @@ namespace daw { namespace roomba {
 		} else if( -2000 > radius || 2000 < radius ) {
 			throw std::runtime_error( "Turn radius outside of range (-2000,2000)" );
 		}
-		std::vector<unsigned char> vSpeed = util::shortToChars( speed );
-		std::vector<unsigned char> vRadius = util::shortToChars( radius );
+		std::vector<uint8_t> vSpeed = util::shortToChars( speed );
+		std::vector<uint8_t> vRadius = util::shortToChars( radius );
 		if( 0 == radius ) {
 			vRadius[0] = 0x80;
 			vRadius[1] = 0x00;
 		}
-		std::vector<unsigned char> data( { opcodes::DRIVE, vSpeed[0], vSpeed[1], vRadius[0], vRadius[1] } );
-		mRoombaPort.send( data );
+		std::vector<uint8_t> data( { opcodes::DRIVE, vSpeed[0], vSpeed[1], vRadius[0], vRadius[1] } );
+		sendRoomba( mArduinoPort, data );
 		mIsMoving = true;
 	}
 
@@ -77,46 +82,39 @@ namespace daw { namespace roomba {
 	}
 
 	void RoombaControl::modeStart( ) {
-		mRoombaPort.send( opcodes::START );
+		sendRoomba( mArduinoPort, opcodes::START );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	void RoombaControl::modeControl( ) {
-		mRoombaPort.send( opcodes::CONTROL );
+		sendRoomba( mArduinoPort, opcodes::CONTROL );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	void RoombaControl::modeSafe( ) {
-		mRoombaPort.send( opcodes::SAFE );
+		sendRoomba( mArduinoPort, opcodes::SAFE );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	void RoombaControl::modeFull( ) {
-		mRoombaPort.send( opcodes::FULL );
+		sendRoomba( mArduinoPort, opcodes::FULL );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	void RoombaControl::cleanStart( ) {
-		std::vector<unsigned char> data( { opcodes::MOTORS, 0x07 } );
-		mRoombaPort.send( data );
+		std::vector<uint8_t> data( { opcodes::MOTORS, 0x07 } );
+		sendRoomba( mArduinoPort, data );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 	void RoombaControl::cleanStop( ) {
-		std::vector<unsigned char> data( { opcodes::MOTORS, 0 } );
-		mRoombaPort.send( data );
+		std::vector<uint8_t> data( { opcodes::MOTORS, 0 } );
+		sendRoomba( mArduinoPort, data );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
-	const SensorPacket1 RoombaControl::getSensorData1( ) {
-		mRoombaPort.send( {daw::roomba::opcodes::SENSORS, 1} );
-		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
-		return 	daw::roomba::SensorPacket1( mRoombaPort.receive( 10 ) );
-	}
-
-	const SensorPacket3 RoombaControl::getSensorData3( ) {
-		mRoombaPort.send( {daw::roomba::opcodes::SENSORS, 3} );
-		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
-		return 	daw::roomba::SensorPacket3( mRoombaPort.receive( 10 ) );
+	const SensorPackets RoombaControl::getSensorData( ) {
+		arduinoPort.send( 33 );
+		return 	daw::roomba::SensorPackets( mRoombaPort.receive( 26 ) );
 	}
 
 	const bool& RoombaControl::isMoving( ) const {

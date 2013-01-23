@@ -20,6 +20,7 @@
 #include <boost/asio.hpp>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 #include "roombasensors.h"
 #include "serialport.h"
@@ -27,39 +28,38 @@
 namespace daw { namespace roomba {
 	class opcodes {
 	public:
-		const static unsigned char START = 128;
-		const static unsigned char BAUD = 129;
-		const static unsigned char CONTROL = 130;
-		const static unsigned char SAFE = 131;
-		const static unsigned char FULL = 132;
-		const static unsigned char POWER = 133;
-		const static unsigned char SPOT = 134;
-		const static unsigned char CLEAN = 135;
-		const static unsigned char MAX = 136;
-		const static unsigned char DRIVE = 137;
-		const static unsigned char MOTORS = 138;
-		const static unsigned char LEDS = 139;
-		const static unsigned char SONG = 140;
-		const static unsigned char PLAY = 141;
-		const static unsigned char SENSORS = 142;
-		const static unsigned char DOCK = 143;
+		const static uint8_t START = 128;
+		const static uint8_t BAUD = 129;
+		const static uint8_t CONTROL = 130;
+		const static uint8_t SAFE = 131;
+		const static uint8_t FULL = 132;
+		const static uint8_t POWER = 133;
+		const static uint8_t SPOT = 134;
+		const static uint8_t CLEAN = 135;
+		const static uint8_t MAX = 136;
+		const static uint8_t DRIVE = 137;
+		const static uint8_t MOTORS = 138;
+		const static uint8_t LEDS = 139;
+		const static uint8_t SONG = 140;
+		const static uint8_t PLAY = 141;
+		const static uint8_t SENSORS = 142;
+		const static uint8_t DOCK = 143;
 	};
 	
 	class RoombaControl {
 	private:
-		daw::SerialPort mRoombaPort;
 		daw::SerialPort mArduinoPort;
 		bool mIsMoving;
 		bool mLaserOn;
 	public:
-		RoombaControl( const std::string& roombaPort, const std::string& arduinoPort );
+		RoombaControl( const std::string& arduinoPort );
 		~RoombaControl( );
 		void motorsMove( const short speed, short radius, const bool initControl = true );
 		void motorsStop( const bool initControl = true );
 
-		const std::vector<unsigned char> receive( size_t count );	
-		void send( const unsigned char value );
-		void send( const std::vector<unsigned char>& values, size_t count = 0 );
+		const std::vector<uint8_t> receive( size_t count );	
+		void send( const uint8_t value );
+		void send( const std::vector<uint8_t>& values, size_t count = 0 );
 
 		void modeStart( );
 		void modeControl( );
@@ -67,8 +67,7 @@ namespace daw { namespace roomba {
 		void modeFull( );
 		void cleanStart( );
 		void cleanStop( );
-		const SensorPacket1 getSensorData1( );
-		const SensorPacket3 getSensorData3( );
+		const SensorPackets getSensorData( );
 		const bool& isMoving( ) const;
 		void laserStart( );
 		void laserStop( );
