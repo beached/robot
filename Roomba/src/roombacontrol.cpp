@@ -30,16 +30,6 @@ namespace {
 }
 
 namespace daw { namespace roomba {
-	static void sendRoomba( const daw::SerialPort& arduino, const uint8_t value ) {
-		arduino.send( { 32, 1 } );
-		arduino.send( value );
-	}
-
-	static void sendRoomba( const daw::SerialPort& arduino, const std::vector<uint8_t>& data ) {
-		arduino.send( { 32, data.size( ) } );
-		arduino.send( data );
-	}
-
 	RoombaControl::RoombaControl( const std::string& arduinoPort ): mArduinoPort( arduinoPort, 115200 ), mIsMoving( false ), mLaserOn( false ) {
 		std::cerr << "Connected to Roomba on " << roombaPort << " and Arduino on " << arduinoPort << std::endl;
 		// Setup Arduino Connection
@@ -72,7 +62,7 @@ namespace daw { namespace roomba {
 			vRadius[1] = 0x00;
 		}
 		std::vector<uint8_t> data( { opcodes::DRIVE, vSpeed[0], vSpeed[1], vRadius[0], vRadius[1] } );
-		sendRoomba( mArduinoPort, data );
+		mArduinoPort.send( data );
 		mIsMoving = true;
 	}
 
@@ -82,38 +72,38 @@ namespace daw { namespace roomba {
 	}
 
 	void RoombaControl::modeStart( ) {
-		sendRoomba( mArduinoPort, opcodes::START );
+		mArduinoPort.send( opcodes::START );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	void RoombaControl::modeControl( ) {
-		sendRoomba( mArduinoPort, opcodes::CONTROL );
+		mArduinoPort.send( opcodes::CONTROL );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	void RoombaControl::modeSafe( ) {
-		sendRoomba( mArduinoPort, opcodes::SAFE );
+		mArduinoPort.send( opcodes::SAFE );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	void RoombaControl::modeFull( ) {
-		sendRoomba( mArduinoPort, opcodes::FULL );
+		mArduinoPort( opcodes::FULL );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	void RoombaControl::cleanStart( ) {
 		std::vector<uint8_t> data( { opcodes::MOTORS, 0x07 } );
-		sendRoomba( mArduinoPort, data );
+		mArduinoPort.send( data );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 	void RoombaControl::cleanStop( ) {
 		std::vector<uint8_t> data( { opcodes::MOTORS, 0 } );
-		sendRoomba( mArduinoPort, data );
+		mArduinoPort.send( data );
 		boost::this_thread::sleep( boost::posix_time::milliseconds( 20 ) );
 	}
 
 	const SensorPackets RoombaControl::getSensorData( ) {
-		arduinoPort.send( 33 );
+		arduinoPort.send( opcodes::SENSORS );
 		return 	daw::roomba::SensorPackets( mRoombaPort.receive( 26 ) );
 	}
 
