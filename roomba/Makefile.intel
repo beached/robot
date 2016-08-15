@@ -1,0 +1,5 @@
+CXX=g++-4.7
+OPT=
+
+include ./Makefile.common
+
