@@ -1,5 +1,0 @@
-
-CXX=g++-4.7
-OPT=-ftree-vectorize -ffast-math -march=armv6 -mfpu=vfp -mfloat-abi=hard
-
-include ./Makefile.common
